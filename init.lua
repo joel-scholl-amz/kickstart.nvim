@@ -919,6 +919,34 @@ require('lazy').setup({
       -- - sr)'  - [S]urround [R]eplace [)] [']
       require('mini.surround').setup()
 
+      -- File explorer
+      require('mini.files').setup {
+        -- Customization options (all optional)
+        mappings = {
+          close = 'q',
+          go_in = 'l',
+          go_in_plus = '<CR>',
+          go_out = 'h',
+          go_out_plus = 'H',
+          reset = '<BS>',
+          reveal_cwd = '@',
+          show_help = 'g?',
+          synchronize = '=',
+          trim_left = '<',
+          trim_right = '>',
+        },
+        windows = {
+          preview = true,
+          width_preview = 40,
+        },
+      }
+      vim.keymap.set('n', '<leader>e', function()
+        MiniFiles.open(vim.api.nvim_buf_get_name(0))
+      end, { desc = 'File [E]xplorer (current file)' })
+      vim.keymap.set('n', '<leader>E', function()
+        MiniFiles.open()
+      end, { desc = 'File [E]xplorer (cwd)' })
+
       -- Simple and easy statusline.
       --  You could remove this setup call if you don't like it,
       --  and try some other statusline plugin
