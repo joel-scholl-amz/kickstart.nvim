@@ -698,6 +698,27 @@ require('lazy').setup({
             },
           },
         },
+
+        -- YAML with Kubernetes schema support
+        yamlls = {
+          settings = {
+            yaml = {
+              schemas = {
+                kubernetes = '/*.yaml',
+                ['https://raw.githubusercontent.com/compose-spec/compose-spec/master/schema/compose-spec.json'] = 'docker-compose*.yaml',
+              },
+              schemaStore = {
+                enable = true,
+              },
+              validate = true,
+              completion = true,
+              hover = true,
+            },
+          },
+        },
+
+        -- Helm templates (Go templates in YAML)
+        helm_ls = {},
       }
 
       -- Ensure the servers and tools above are installed
@@ -972,7 +993,7 @@ require('lazy').setup({
     main = 'nvim-treesitter.config', -- Sets main module to use for opts
     -- [[ Configure Treesitter ]] See `:help nvim-treesitter`
     opts = {
-      ensure_installed = { 'bash', 'c', 'diff', 'html', 'lua', 'luadoc', 'markdown', 'markdown_inline', 'query', 'vim', 'vimdoc' },
+      ensure_installed = { 'bash', 'c', 'diff', 'html', 'lua', 'luadoc', 'markdown', 'markdown_inline', 'query', 'vim', 'vimdoc', 'yaml', 'helm', 'go', 'json' },
       -- Autoinstall languages that are not installed
       auto_install = true,
       highlight = {
