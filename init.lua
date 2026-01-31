@@ -92,7 +92,10 @@ vim.g.maplocalleader = ' '
 
 -- Set to true if you have a Nerd Font installed and selected in the terminal
 vim.g.have_nerd_font = true
+<<<<<<< HEAD
 vim.o.background = 'dark'
+=======
+>>>>>>> 1b09765 (feat: +diffview,sops,kustomizeschema,kbuild,activate-nerdfont)
 
 -- [[ Setting options ]]
 -- See `:help vim.o`
@@ -711,7 +714,8 @@ require('lazy').setup({
           settings = {
             yaml = {
               schemas = {
-                kubernetes = '/*.yaml',
+                ['https://json.schemastore.org/kustomization.json'] = 'kustomization.yaml',
+                kubernetes = { '*.yaml', '!kustomization.yaml' },
                 ['https://raw.githubusercontent.com/compose-spec/compose-spec/master/schema/compose-spec.json'] = 'docker-compose*.yaml',
               },
               schemaStore = {
@@ -1040,7 +1044,7 @@ require('lazy').setup({
   --    This is the easiest way to modularize your config.
   --
   --  Uncomment the following line and add your plugins to `lua/custom/plugins/*.lua` to get going.
-  -- { import = 'custom.plugins' },
+  { import = 'custom.plugins' },
   --
   -- For additional information with loading, sourcing and examples see `:help lazy.nvim-🔌-plugin-spec`
   -- Or use telescope!
@@ -1067,6 +1071,22 @@ require('lazy').setup({
     },
   },
 })
+
+-- Kustomize build command with optional path
+vim.api.nvim_create_user_command('KBuild', function(opts)
+  local path = opts.args ~= '' and opts.args or '.'
+  -- Reuse current buffer if empty and unnamed, otherwise create new
+  local buf_empty = vim.fn.line('$') == 1 and vim.fn.getline(1) == ''
+  local buf_unnamed = vim.fn.bufname('%') == ''
+  if not (buf_empty and buf_unnamed) then
+    vim.cmd 'new'
+  end
+  vim.bo.buftype = 'nofile'
+  vim.bo.bufhidden = 'wipe'
+  vim.bo.filetype = 'yaml'
+  vim.cmd('r !kustomize build ' .. vim.fn.shellescape(path))
+  vim.cmd '1delete'
+end, { nargs = '?', complete = 'dir', desc = 'Kustomize build with optional path' })
 
 -- The line beneath this is called `modeline`. See `:help modeline`
 -- vim: ts=2 sts=2 sw=2 et
