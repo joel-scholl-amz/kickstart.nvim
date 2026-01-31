@@ -17,4 +17,5 @@ return {
     cmd = { 'DiffviewOpen', 'DiffviewFileHistory' },
     opts = {},
   },
+  -- { 'christoomey/vim-tmux-navigator' },
 }
