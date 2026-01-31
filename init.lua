@@ -92,10 +92,6 @@ vim.g.maplocalleader = ' '
 
 -- Set to true if you have a Nerd Font installed and selected in the terminal
 vim.g.have_nerd_font = true
-<<<<<<< HEAD
-vim.o.background = 'dark'
-=======
->>>>>>> 1b09765 (feat: +diffview,sops,kustomizeschema,kbuild,activate-nerdfont)
 
 -- [[ Setting options ]]
 -- See `:help vim.o`
