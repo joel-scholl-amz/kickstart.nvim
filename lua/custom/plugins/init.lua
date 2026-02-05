@@ -15,7 +15,27 @@ return {
   {
     'sindrets/diffview.nvim',
     cmd = { 'DiffviewOpen', 'DiffviewFileHistory' },
-    opts = {},
+    opts = {
+      enhanced_diff_hl = true,
+    },
   },
   { 'christoomey/vim-tmux-navigator' },
+  {
+    'iamcco/markdown-preview.nvim',
+    cmd = { 'MarkdownPreviewToggle', 'MarkdownPreview', 'MarkdownPreviewStop' },
+    ft = { 'markdown' },
+    keys = {
+      { '<leader>mp', ':MarkdownPreviewToggle<CR>', desc = 'Markdown Preview' },
+    },
+    build = 'cd app && yarn install',
+    config = function()
+      vim.g.mkdp_auto_close = 0 -- Don't close preview when switching buffers
+      -- vim.g.mkdp_theme = 'dark' -- or 'light'
+      -- Browser command for WSL:
+      -- vim.g.mkdp_browser = '/mnt/c/Program Files/Google/Chrome/Application/chrome.exe'
+      -- Or for Edge:
+      -- vim.g.mkdp_browser = '/mnt/c/Windows/System32/cmd.exe /c start msedge'
+      vim.g.mkdp_browser = 'firefox'
+    end,
+  },
 }

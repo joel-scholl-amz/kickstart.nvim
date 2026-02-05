@@ -168,6 +168,7 @@ vim.o.confirm = true
 
 -- [[ Basic Keymaps ]]
 --  See `:help vim.keymap.set()`
+vim.keymap.set('n', '<leader>nt', '<cmd>tabnew<CR>')
 
 -- Clear highlights on search when pressing <Esc> in normal mode
 --  See `:help hlsearch`
@@ -204,6 +205,9 @@ vim.keymap.set('n', '<C-k>', '<C-w><C-k>', { desc = 'Move focus to the upper win
 -- vim.keymap.set("n", "<C-S-l>", "<C-w>L", { desc = "Move window to the right" })
 -- vim.keymap.set("n", "<C-S-j>", "<C-w>J", { desc = "Move window to the lower" })
 -- vim.keymap.set("n", "<C-S-k>", "<C-w>K", { desc = "Move window to the upper" })
+
+vim.opt.diffopt:append 'algorithm:histogram'
+vim.opt.diffopt:append 'indent-heuristic'
 
 -- [[ Basic Autocommands ]]
 --  See `:help lua-guide-autocommands`
@@ -1072,8 +1076,8 @@ require('lazy').setup({
 vim.api.nvim_create_user_command('KBuild', function(opts)
   local path = opts.args ~= '' and opts.args or '.'
   -- Reuse current buffer if empty and unnamed, otherwise create new
-  local buf_empty = vim.fn.line('$') == 1 and vim.fn.getline(1) == ''
-  local buf_unnamed = vim.fn.bufname('%') == ''
+  local buf_empty = vim.fn.line '$' == 1 and vim.fn.getline(1) == ''
+  local buf_unnamed = vim.fn.bufname '%' == ''
   if not (buf_empty and buf_unnamed) then
     vim.cmd 'new'
   end
