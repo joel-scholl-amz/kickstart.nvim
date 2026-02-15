@@ -8,8 +8,8 @@ return {
     event = 'BufRead',
     opts = {},
     keys = {
-      { '<leader>ef', vim.cmd.SopsEncrypt, desc = '[E]ncrypt [F]ile' },
-      { '<leader>df', vim.cmd.SopsDecrypt, desc = '[D]ecrypt [F]ile' },
+      -- { '<leader>ef', vim.cmd.SopsEncrypt, desc = '[E]ncrypt [F]ile' },
+      -- { '<leader>df', vim.cmd.SopsDecrypt, desc = '[D]ecrypt [F]ile' },
     },
   },
   {
@@ -17,6 +17,20 @@ return {
     cmd = { 'DiffviewOpen', 'DiffviewFileHistory' },
     opts = {
       enhanced_diff_hl = true,
+    },
+  },
+  {
+    'joel-scholl-amz/nvim-k8s-crd',
+    event = { 'BufReadPre', 'BufNewFile' },
+    dependencies = {
+      'neovim/nvim-lspconfig',
+      'nvim-lua/plenary.nvim',
+    },
+    opts = {
+      cache_dir = '$HOME/.cache/k8s-schemas/',
+      k8s = {
+        file_mask = '*.yaml',
+      },
     },
   },
   {
@@ -49,6 +63,15 @@ return {
       -- Or for Edge:
       -- vim.g.mkdp_browser = '/mnt/c/Windows/System32/cmd.exe /c start msedge'
       vim.g.mkdp_browser = 'firefox'
+    end,
+  },
+  {
+    'greggh/claude-code.nvim',
+    dependencies = {
+      'nvim-lua/plenary.nvim', -- Required for git operations
+    },
+    config = function()
+      require('claude-code').setup()
     end,
   },
 }
