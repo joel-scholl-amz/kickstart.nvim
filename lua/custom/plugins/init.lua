@@ -66,6 +66,26 @@ return {
     end,
   },
   {
+    'obsidian-nvim/obsidian.nvim',
+    version = '*', -- use latest release, remove to use latest commit
+    ft = 'markdown',
+    ---@module 'obsidian'
+    ---@type obsidian.config
+    opts = {
+      legacy_commands = false, -- this will be removed in the next major release
+      workspaces = {
+        {
+          name = 'work',
+          path = '/mnt/c/users/SchollJ/Documents/notes/obsidian',
+        },
+        {
+          name = 'personal',
+          path = '~/vaults/personal',
+        },
+      },
+    },
+  },
+  {
     'greggh/claude-code.nvim',
     dependencies = {
       'nvim-lua/plenary.nvim', -- Required for git operations
