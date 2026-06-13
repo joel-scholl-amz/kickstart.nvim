@@ -86,6 +86,29 @@ return {
     },
   },
   {
+    'obsidian-tasks.nvim',
+    -- dir is the plugin's source location; the vault path is configured
+    -- in obsidian.nvim's workspaces above
+    dir = '~/Documents/dev/obsidian-tasks.nvim',
+    cmd = 'ObsidianTasks',
+    keys = {
+      { '<leader>oo', '<cmd>ObsidianTasks<cr>', desc = 'Obsidian task board' },
+    },
+    dependencies = { 'obsidian-nvim/obsidian.nvim' },
+    -- everything in opts is passed to the plugin's setup();
+    -- fields outside opts are lazy.nvim spec fields and reach the plugin only if lazy knows them
+    opts = {
+      folders = {
+        -- vault-relative; empty = scan the whole vault
+        include = { 'Notes/ToDos' },
+      },
+      show_filename = true,
+      upcoming_days = 7,
+      sort = { 'priority', 'due' }, -- primary, secondary; also: "file", "text"
+      -- defaults: m = (m)ove to next panel, s/S = (s)elect / clear selection
+    },
+  },
+  {
     'greggh/claude-code.nvim',
     dependencies = {
       'nvim-lua/plenary.nvim', -- Required for git operations
@@ -105,5 +128,10 @@ return {
       { '8', '<Plug>(kubectl.view_overview)', ft = 'k8s_*' },
       { '<C-t>', '<Plug>(kubectl.view_top)', ft = 'k8s_*' },
     },
+  },
+  {
+    'nosduco/remote-sshfs.nvim',
+    dependencies = { 'nvim-telescope/telescope.nvim', 'nvim-lua/plenary.nvim' },
+    opts = {},
   },
 }
