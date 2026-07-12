@@ -19,30 +19,30 @@ local M = {}
 M.opts = {
   -- short id of the sprint/milestone work item the kanban filters on
   -- (e.g. "HELAX-5137" = Sprint 5); update it when a new sprint starts
-  sprint = "",
+  sprint = 'HELAX-5156',
   -- custom field on tasks that references that sprint work item
-  sprint_field = "cfTargetSprint",
+  sprint_field = 'cfTargetSprint',
   -- only tasks in these states are pulled
-  statuses = { "inprogress" },
+  statuses = { 'inprogress' },
   -- section-name → Polarion user overrides: the exact user id or full
   -- display name, e.g. { Paul = "MusterP" } or { Paul = "Paul Muster" }.
   -- Sections without an entry are matched by first name against the
   -- assignees' display names and user ids.
   members = {},
   -- template block the tasks are inserted into (created when missing)
-  today_label = "Today",
+  today_label = 'Today',
   -- appended to a note line once its comment is in Polarion
-  pushed_marker = " ✅",
+  pushed_marker = ' ✅',
 }
 
 ---@param opts table|nil  overrides for M.opts
 function M.setup(opts)
-  M.opts = vim.tbl_deep_extend("force", M.opts, opts or {})
-  vim.api.nvim_create_user_command("PolarionDailyPull", M.pull, {
-    desc = "Insert open sprint tasks into the daily note",
+  M.opts = vim.tbl_deep_extend('force', M.opts, opts or {})
+  vim.api.nvim_create_user_command('PolarionDailyPull', M.pull, {
+    desc = 'Insert open sprint tasks into the daily note',
   })
-  vim.api.nvim_create_user_command("PolarionDailyPush", M.push, {
-    desc = "Push daily-note task remarks to Polarion as comments",
+  vim.api.nvim_create_user_command('PolarionDailyPush', M.push, {
+    desc = 'Push daily-note task remarks to Polarion as comments',
   })
 end
 
@@ -55,12 +55,12 @@ end
 function M._sections(lines)
   local secs, open = {}, nil
   for i, line in ipairs(lines) do
-    if line:match("^#+%s") then
+    if line:match '^#+%s' then
       if open then
         open.last = i - 1
         open = nil
       end
-      local name = line:match("^#+%s+(%a[%w_%-]*)%s*$")
+      local name = line:match '^#+%s+(%a[%w_%-]*)%s*$'
       if name then
         open = { name = name, first = i, last = #lines }
         secs[#secs + 1] = open
@@ -72,13 +72,13 @@ end
 
 --- Parse a task bullet: returns indent (whitespace prefix) and work item id.
 local function task_line_id(line)
-  return line:match("^([\t ]*)[-*]%s+%[([%w_]+%-%d+)%]")
+  return line:match '^([\t ]*)[-*]%s+%[([%w_]+%-%d+)%]'
 end
 
 --- Format the bullet line for one pulled task.
 local function format_task(task)
-  local status = task.status ~= "" and (" (%s)"):format(task.status) or ""
-  return ("\t- [%s] %s%s"):format(task.short_id, task.title, status)
+  local status = task.status ~= '' and (' (%s)'):format(task.status) or ''
+  return ('\t- [%s] %s%s'):format(task.short_id, task.title, status)
 end
 
 --- Does `task` belong to member `name`? With an `override` only an exact
@@ -141,7 +141,7 @@ function M._merge_tasks(lines, tasks, opts)
       -- find the Today block header in the section
       local header
       for i = sec.first, sec.last do
-        if out[i]:match("^[-*]%s+%*%*" .. vim.pesc(opts.today_label) .. "%*%*%s*$") then
+        if out[i]:match('^[-*]%s+%*%*' .. vim.pesc(opts.today_label) .. '%*%*%s*$') then
           header = i
           break
         end
@@ -149,17 +149,17 @@ function M._merge_tasks(lines, tasks, opts)
       local at -- insert new task lines after this line
       if header then
         at = header
-        while at + 1 <= sec.last and out[at + 1]:match("^[\t ]+[-*]%s") do
+        while at + 1 <= sec.last and out[at + 1]:match '^[\t ]+[-*]%s' do
           at = at + 1
         end
       else
         -- no block in the template: append one at the section end, above
         -- trailing blanks
         at = sec.last
-        while at > sec.first and out[at]:match("^%s*$") do
+        while at > sec.first and out[at]:match '^%s*$' do
           at = at - 1
         end
-        table.insert(new_lines, 1, ("- **%s**"):format(opts.today_label))
+        table.insert(new_lines, 1, ('- **%s**'):format(opts.today_label))
       end
       for i = #new_lines, 1, -1 do
         table.insert(out, at + 1, new_lines[i])
@@ -179,8 +179,8 @@ end
 --- so tab- and space-indented lines compare sanely.
 local function indent_width(ws)
   local w = 0
-  for c in ws:gmatch(".") do
-    w = c == "\t" and (w + 4 - w % 4) or (w + 1)
+  for c in ws:gmatch '.' do
+    w = c == '\t' and (w + 4 - w % 4) or (w + 1)
   end
   return w
 end
@@ -213,7 +213,7 @@ function M._collect_notes(lines, marker)
       local note, note_w
       local j = i + 1
       while j <= #lines do
-        local nindent, text = lines[j]:match("^([\t ]+)[-*]%s+(.-)%s*$")
+        local nindent, text = lines[j]:match '^([\t ]+)[-*]%s+(.-)%s*$'
         local w = nindent and indent_width(nindent)
         if not w or w <= base then
           break
@@ -234,7 +234,7 @@ function M._collect_notes(lines, marker)
   end
   return vim.tbl_filter(function(n)
     local head = n.text[1]
-    return head ~= "" and head ~= "." and not vim.endswith(lines[n.lnum], marker)
+    return head ~= '' and head ~= '.' and not vim.endswith(lines[n.lnum], marker)
   end, notes)
 end
 
@@ -246,57 +246,57 @@ end
 function M._comment_html(note, date)
   local parts = {}
   for _, t in ipairs(note.text) do
-    parts[#parts + 1] = t:gsub("&", "&amp;"):gsub("<", "&lt;"):gsub(">", "&gt;")
+    parts[#parts + 1] = t:gsub('&', '&amp;'):gsub('<', '&lt;'):gsub('>', '&gt;')
   end
-  local who = note.section and (note.section .. ": ") or ""
-  return ("<p>[Daily %s] %s%s</p>"):format(date, who, table.concat(parts, "<br/>"))
+  local who = note.section and (note.section .. ': ') or ''
+  return ('<p>[Daily %s] %s%s</p>'):format(date, who, table.concat(parts, '<br/>'))
 end
 
 -- ── commands ─────────────────────────────────────────────────────────────────
 
 local function notify(msg, level)
-  vim.notify("polarion daily: " .. msg, level or vim.log.levels.INFO)
+  vim.notify('polarion daily: ' .. msg, level or vim.log.levels.INFO)
 end
 
 --- Date of the daily note in the current buffer (from the file name),
 --- falling back to today.
 local function note_date(buf)
   local name = vim.api.nvim_buf_get_name(buf)
-  return name:match("(%d%d%d%d%-%d%d%-%d%d)") or os.date("%Y-%m-%d")
+  return name:match '(%d%d%d%d%-%d%d%-%d%d)' or os.date '%Y-%m-%d'
 end
 
 --- Pull open tasks of the configured sprint into the daily note in the
 --- current buffer, one Tasks block per member section.
 function M.pull()
   local buf = vim.api.nvim_get_current_buf()
-  if not vim.api.nvim_buf_get_name(buf):match("%.md$") then
-    notify("current buffer is not a markdown note", vim.log.levels.ERROR)
+  if not vim.api.nvim_buf_get_name(buf):match '%.md$' then
+    notify('current buffer is not a markdown note', vim.log.levels.ERROR)
     return
   end
-  if M.opts.sprint == "" then
-    notify("no sprint configured — set opts.sprint to the sprint work item id", vim.log.levels.ERROR)
+  if M.opts.sprint == '' then
+    notify('no sprint configured — set opts.sprint to the sprint work item id', vim.log.levels.ERROR)
     return
   end
-  local api = require("polarion.api")
+  local api = require 'polarion.api'
   local cfg, cerr = api.config()
   if not cfg then
     notify(cerr, vim.log.levels.ERROR)
     return
   end
-  notify(("fetching tasks of sprint %s…"):format(M.opts.sprint))
+  notify(('fetching tasks of sprint %s…'):format(M.opts.sprint))
   -- resolve the sprint item first: its title for the summary, and a clear
   -- error when the configured id has gone stale
-  api.tasks(("id:(%s)"):format(M.opts.sprint), function(sprint_items, err)
+  api.tasks(('id:(%s)'):format(M.opts.sprint), function(sprint_items, err)
     if not sprint_items then
       notify(err, vim.log.levels.ERROR)
       return
     end
     if not sprint_items[1] then
-      notify(("sprint work item %s not found — update opts.sprint"):format(M.opts.sprint), vim.log.levels.ERROR)
+      notify(('sprint work item %s not found — update opts.sprint'):format(M.opts.sprint), vim.log.levels.ERROR)
       return
     end
     local sprint = sprint_items[1]
-    local query = ("type:%s AND %s.KEY:(%s)"):format(cfg.work_item_types.task, M.opts.sprint_field, M.opts.sprint)
+    local query = ('type:%s AND %s.KEY:(%s)'):format(cfg.work_item_types.task, M.opts.sprint_field, M.opts.sprint)
     api.tasks(query, function(tasks, terr)
       if not tasks then
         notify(terr, vim.log.levels.ERROR)
@@ -319,21 +319,21 @@ function M.pull()
         vim.api.nvim_buf_set_lines(buf, 0, -1, false, new_lines)
       end
 
-      local msg = ("%s: %d task(s) added, %d already present"):format(sprint.title, stats.added, stats.present)
+      local msg = ('%s: %d task(s) added, %d already present'):format(sprint.title, stats.added, stats.present)
       local unassigned = 0
       local ids = {}
       for _, t in ipairs(stats.unmatched) do
         if #(t.assignees or {}) == 0 then
           unassigned = unassigned + 1
         else
-          ids[#ids + 1] = ("%s (%s)"):format(t.short_id, t.assignees[1].name)
+          ids[#ids + 1] = ('%s (%s)'):format(t.short_id, t.assignees[1].name)
         end
       end
       if #ids > 0 then
-        msg = msg .. ("\nno matching section for: %s"):format(table.concat(ids, ", "))
+        msg = msg .. ('\nno matching section for: %s'):format(table.concat(ids, ', '))
       end
       if unassigned > 0 then
-        msg = msg .. ("\n%d matching task(s) unassigned"):format(unassigned)
+        msg = msg .. ('\n%d matching task(s) unassigned'):format(unassigned)
       end
       notify(msg)
     end)
@@ -348,7 +348,7 @@ function M.push()
   local lines = vim.api.nvim_buf_get_lines(buf, 0, -1, false)
   local notes = M._collect_notes(lines, M.opts.pushed_marker)
   if #notes == 0 then
-    notify("no new notes to push")
+    notify 'no new notes to push'
     return
   end
 
@@ -357,22 +357,22 @@ function M.push()
   for _, n in ipairs(notes) do
     local head = n.text[1]
     if #head > 60 then
-      head = head:sub(1, 57) .. "…"
+      head = head:sub(1, 57) .. '…'
     end
-    summary[#summary + 1] = ("  %s ← %s"):format(n.id, head)
+    summary[#summary + 1] = ('  %s ← %s'):format(n.id, head)
   end
-  local prompt = ("Push %d comment(s) to Polarion?\n%s"):format(#notes, table.concat(summary, "\n"))
-  if vim.fn.confirm(prompt, "&Push\n&Cancel", 2) ~= 1 then
+  local prompt = ('Push %d comment(s) to Polarion?\n%s'):format(#notes, table.concat(summary, '\n'))
+  if vim.fn.confirm(prompt, '&Push\n&Cancel', 2) ~= 1 then
     return
   end
 
-  local api = require("polarion.api")
+  local api = require 'polarion.api'
   local idx, pushed, errs = 1, 0, {}
   local function step()
     if idx > #notes then
-      local msg = ("pushed %d comment(s)"):format(pushed)
+      local msg = ('pushed %d comment(s)'):format(pushed)
       if #errs > 0 then
-        notify(msg .. "\nfailed:\n  " .. table.concat(errs, "\n  "), vim.log.levels.ERROR)
+        notify(msg .. '\nfailed:\n  ' .. table.concat(errs, '\n  '), vim.log.levels.ERROR)
       else
         notify(msg)
       end
@@ -382,7 +382,7 @@ function M.push()
     idx = idx + 1
     api.add_comment(n.id, M._comment_html(n, date), nil, function(err)
       if err then
-        errs[#errs + 1] = ("%s: %s"):format(n.id, err)
+        errs[#errs + 1] = ('%s: %s'):format(n.id, err)
       else
         pushed = pushed + 1
         if vim.api.nvim_buf_is_valid(buf) then
