@@ -13,6 +13,20 @@ return {
     },
   },
   {
+    'sphamba/smear-cursor.nvim',
+    opts = {
+      stiffness = 0.8,
+      trailing_stiffness = 0.6,
+      damping = 0.95,
+      smear_between_buffers = true,
+      distance_stop_animating = 0.5,
+    },
+  },
+  {
+    'qvalentin/helm-ls.nvim',
+    ft = 'helm',
+  },
+  {
     'sindrets/diffview.nvim',
     cmd = { 'DiffviewOpen', 'DiffviewFileHistory' },
     opts = {
